@@ -5,4 +5,58 @@
 //  Created by João Pedro Rocha on 07/11/24.
 //
 
-import Foundation
+import UIKit
+
+struct AnimesResponse : Decodable {
+  let data: [Anime];
+};
+
+struct Anime: Decodable {
+  let id: Int;
+  let title: String;
+  let synopsis: String;
+  let url: String;
+  let imageUrl: String;
+  let trailerUrl: String?
+  
+  private enum CodingKeys: String, CodingKey {
+    case id = "mal_id";
+    case title;
+    case synopsis;
+    case url;
+    case images;
+    case trailer;
+  };
+  
+  private enum ImagesKeys: String, CodingKey {
+    case jpg;
+  };
+  
+  private enum JpgKeys: String, CodingKey {
+    case imageUrl = "image_url";
+  };
+  
+  private enum TrailerKeys: String, CodingKey {
+    case url;
+  };
+  
+  init(from decoder: any Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self);
+    
+    id = try container.decode(Int.self, forKey: .id);
+    title = try container.decode(String.self, forKey: .title);
+    synopsis = try container.decode(String.self, forKey: .synopsis);
+    url = try container.decode(String.self, forKey: .url);
+    
+    let imagesContainer = try container.nestedContainer(keyedBy: ImagesKeys.self, forKey: .images);
+    let jpgContainer = try imagesContainer.nestedContainer(keyedBy: JpgKeys.self, forKey: .jpg);
+    imageUrl = try jpgContainer.decode(String.self, forKey: .imageUrl);
+    
+    // Sempre que for Opcional deve ser tratado para funcionar.
+    if let trailerContainer = try? container.nestedContainer(keyedBy: TrailerKeys.self, forKey: .trailer) {
+      trailerUrl = try? trailerContainer.decode(String.self, forKey: .url);
+    } else {
+      trailerUrl = nil;
+    };
+  };
+};

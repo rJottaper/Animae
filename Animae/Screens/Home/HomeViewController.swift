@@ -8,22 +8,74 @@
 import UIKit
 
 class HomeViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
+  let scrollView = UIScrollView();
+  let homeView = HomeView();
+  
+  let animeService = AnimeService();
+  
+  override func viewDidLoad() {
+    super.viewDidLoad();
     
+    getAnimes();
+    configureScrollView();
+    configureHomeView();
+  };
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews();
+    
+    configureScrollView();
+  };
+  
+  private func getAnimes() {
+    Task {
+      do {
+        let animes = try await animeService.getTopAnime();
+        homeView.configureAnimes(with: animes);
+      } catch AnimaServiceError.invalidResponse {
+        print("Failed to get animes");
+      };
+    };
+  };
+};
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+extension HomeViewController: UIScrollViewDelegate {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    if scrollView.contentOffset.y < 0 {
+      scrollView.contentOffset.y = 0;
+    };
+  };
 }
+
+// MARK: LAYOUT
+
+extension HomeViewController {
+  private func configureScrollView() {
+    view.addSubview(scrollView);
+    
+    scrollView.translatesAutoresizingMaskIntoConstraints = false;
+    scrollView.delegate = self;
+    
+    NSLayoutConstraint.activate([
+      scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+      scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+      scrollView.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor)
+    ]);
+  };
+  
+  private func configureHomeView() {
+    scrollView.addSubview(homeView);
+    
+    homeView.translatesAutoresizingMaskIntoConstraints = false;
+    
+    NSLayoutConstraint.activate([
+      homeView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+      homeView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+      homeView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+      homeView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+      homeView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+    ]);
+  };
+};
