@@ -17,6 +17,7 @@ class HomeViewController: UIViewController {
     super.viewDidLoad();
     
     getAnimes();
+    configureHeader();
     configureScrollView();
     configureHomeView();
   };
@@ -44,12 +45,35 @@ extension HomeViewController: UIScrollViewDelegate {
     if scrollView.contentOffset.y < 0 {
       scrollView.contentOffset.y = 0;
     };
+    
+    if scrollView.contentOffset.y >= 320 {
+      navigationItem.rightBarButtonItem = nil;
+    };
+    
+    if scrollView.contentOffset.y < 320 {
+      configureHeader();
+    };
+  };
+  
+  @objc func tapSearchButton() {
+    SceneDelegate.shared?.pushViewController(viewController: SearchAnimeViewController());
   };
 }
 
 // MARK: LAYOUT
 
 extension HomeViewController {
+  private func configureHeader() {
+    let searchButton = UIImage(systemName: "magnifyingglass", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular));
+    navigationItem.rightBarButtonItem = UIBarButtonItem(
+      image: searchButton,
+      style: .plain,
+      target: self,
+      action: #selector(tapSearchButton)
+    );
+    navigationItem.rightBarButtonItem?.tintColor = .white;
+  };
+  
   private func configureScrollView() {
     view.addSubview(scrollView);
     
