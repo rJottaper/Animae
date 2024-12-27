@@ -33,7 +33,7 @@ class HomeViewController: UIViewController {
       do {
         let animes = try await animeService.getTopAnime();
         homeView.configureAnimes(with: animes);
-      } catch AnimaServiceError.invalidResponse {
+      } catch AnimeServiceError.invalidResponse {
         print("Failed to get animes");
       };
     };

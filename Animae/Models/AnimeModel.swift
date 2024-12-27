@@ -14,6 +14,7 @@ struct AnimesResponse : Decodable {
 struct Anime: Decodable {
   let id: Int;
   let title: String;
+  let episodes: Int;
   let synopsis: String;
   let url: String;
   let imageUrl: String;
@@ -22,6 +23,7 @@ struct Anime: Decodable {
   private enum CodingKeys: String, CodingKey {
     case id = "mal_id";
     case title;
+    case episodes;
     case synopsis;
     case url;
     case images;
@@ -45,6 +47,7 @@ struct Anime: Decodable {
     
     id = try container.decode(Int.self, forKey: .id);
     title = try container.decode(String.self, forKey: .title);
+    episodes = try container.decode(Int.self, forKey: .episodes);
     synopsis = try container.decode(String.self, forKey: .synopsis);
     url = try container.decode(String.self, forKey: .url);
     
