@@ -8,8 +8,20 @@
 import UIKit
 
 class SearchAnimeView: UIView {
+  let searchAnimeTableView = UITableView();
+  
+  var animes: [Anime]? {
+    didSet {
+      DispatchQueue.main.async {
+        self.searchAnimeTableView.reloadData();
+      };
+    }
+  };
+  
   override init(frame: CGRect) {
     super.init(frame: frame);
+    
+    configureTableView();
   };
   
   required init?(coder: NSCoder) {
@@ -17,6 +29,49 @@ class SearchAnimeView: UIView {
   };
 };
 
-extension SearchAnimeView {
+extension SearchAnimeView: UITableViewDelegate, UITableViewDataSource {
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return animes?.count ?? 0;
+  };
   
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: SearchAnimeCell.identifier, for: indexPath) as! SearchAnimeCell;
+    
+    if let anime = animes?[indexPath.row] {
+      cell.configure(anime: anime);
+    };
+    
+    return cell
+  };
+  
+  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    return 180
+  };
+  
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let animeDetailsViewController = AnimeDetailsViewController();
+    animeDetailsViewController.configure(with: animes?[indexPath.row]);
+    
+    SceneDelegate.shared?.pushViewController(viewController: animeDetailsViewController);
+  };
+}
+
+extension SearchAnimeView {
+  private func configureTableView() {
+    addSubview(searchAnimeTableView);
+    
+    searchAnimeTableView.translatesAutoresizingMaskIntoConstraints = false;
+    searchAnimeTableView.backgroundColor = .black;
+    searchAnimeTableView.separatorStyle = .none;
+    searchAnimeTableView.register(SearchAnimeCell.self, forCellReuseIdentifier: SearchAnimeCell.identifier);
+    searchAnimeTableView.delegate = self;
+    searchAnimeTableView.dataSource = self;
+    
+    NSLayoutConstraint.activate([
+      searchAnimeTableView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 0),
+      searchAnimeTableView.leadingAnchor.constraint(equalTo: leadingAnchor),
+      searchAnimeTableView.trailingAnchor.constraint(equalTo: trailingAnchor),
+      searchAnimeTableView.bottomAnchor.constraint(equalTo: bottomAnchor)
+    ]);
+  };
 };

@@ -9,6 +9,7 @@ import UIKit
 
 class SearchAnimeViewController: UIViewController {
   let searchAnime = UISearchController();
+  let searchAnimeView = SearchAnimeView();
   
   var animes: AnimesResponse?
   var filteredAnimes: [Anime]?
@@ -23,6 +24,7 @@ class SearchAnimeViewController: UIViewController {
     
     getAnimes();
     configureAnimeSearch();
+    configureSearchAnimeView();
   };
   
   private func getAnimes() {
@@ -34,25 +36,6 @@ class SearchAnimeViewController: UIViewController {
         print("Failed to get search animes");
       };
     };
-  };
-  
-  private func configureAnimeSearch() {
-    searchAnime.searchBar.translatesAutoresizingMaskIntoConstraints = false;
-    searchAnime.searchResultsUpdater = self;
-    searchAnime.searchBar.delegate = self;
-    searchAnime.searchBar.placeholder = "Attack on Titan";
-    searchAnime.searchBar.showsCancelButton = true;
-
-    if let searchBarTextField = searchAnime.searchBar.value(forKey: "searchField") as? UITextField {
-      searchBarTextField.leftView?.tintColor = .white;
-    };
-    
-    if let textField = searchAnime.searchBar.value(forKey: "searchField") as? UITextField {
-      textField.attributedPlaceholder = NSAttributedString(string: "Attack on Titan", attributes: [.foregroundColor: UIColor.gray]);
-    };
-    
-    navigationItem.searchController = searchAnime;
-    searchAnime.searchBar.searchTextField.textColor = .white;
   };
 };
 
@@ -74,6 +57,40 @@ extension SearchAnimeViewController: UISearchResultsUpdating, UISearchBarDelegat
       });
     };
     
-    print(filteredAnimes);
+    searchAnimeView.animes = filteredAnimes;
+  };
+};
+
+extension SearchAnimeViewController {
+  private func configureAnimeSearch() {
+    searchAnime.searchBar.translatesAutoresizingMaskIntoConstraints = false;
+    searchAnime.searchResultsUpdater = self;
+    searchAnime.searchBar.delegate = self;
+    searchAnime.searchBar.placeholder = "Attack on Titan";
+    searchAnime.searchBar.showsCancelButton = true;
+
+    if let searchBarTextField = searchAnime.searchBar.value(forKey: "searchField") as? UITextField {
+      searchBarTextField.leftView?.tintColor = .white;
+    };
+    
+    if let textField = searchAnime.searchBar.value(forKey: "searchField") as? UITextField {
+      textField.attributedPlaceholder = NSAttributedString(string: "Attack on Titan", attributes: [.foregroundColor: UIColor.gray]);
+    };
+    
+    navigationItem.searchController = searchAnime;
+    searchAnime.searchBar.searchTextField.textColor = .white;
+  };
+  
+  private func configureSearchAnimeView() {
+    view.addSubview(searchAnimeView);
+    
+    searchAnimeView.translatesAutoresizingMaskIntoConstraints = false;
+    
+    NSLayoutConstraint.activate([
+      searchAnimeView.topAnchor.constraint(equalTo: view.topAnchor),
+      searchAnimeView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      searchAnimeView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      searchAnimeView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+    ]);
   };
 };
