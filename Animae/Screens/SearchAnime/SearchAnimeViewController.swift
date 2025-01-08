@@ -13,6 +13,7 @@ class SearchAnimeViewController: UIViewController {
   
   var animes: AnimesResponse?
   var filteredAnimes: [Anime]?
+  var debounceWorkItem: DispatchWorkItem?
   
   let animeService = AnimeService();
   
@@ -49,15 +50,27 @@ extension SearchAnimeViewController: UISearchResultsUpdating, UISearchBarDelegat
   };
   
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    if searchText.isEmpty {
-      filteredAnimes?.removeAll();
-    } else {
-      filteredAnimes = animes?.data.filter({
-        anime in anime.title.lowercased().contains(searchText.lowercased());
-      });
+    searchAnimeView.startLoading();
+    debounceWorkItem?.cancel();
+    
+    let workItem = DispatchWorkItem { [weak self] in
+      guard let self else { return }
+      
+      if searchText.isEmpty {
+        filteredAnimes?.removeAll();
+      } else {
+        filteredAnimes = animes?.data.filter({
+          anime in anime.title.lowercased().contains(searchText.lowercased());
+        });
+      };
+      
+      self.searchAnimeView.animes = filteredAnimes;
     };
     
-    searchAnimeView.animes = filteredAnimes;
+    debounceWorkItem = workItem;
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: workItem);
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: searchAnimeView.stopLoading);
   };
 };
 

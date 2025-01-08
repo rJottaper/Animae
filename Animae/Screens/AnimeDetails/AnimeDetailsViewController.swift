@@ -12,9 +12,16 @@ class AnimeDetailsViewController: UIViewController {
   let animeDetailsView = AnimeDetailsView();
   
   var animeTitle: String = "";
+  var isSaved: Bool = false {
+    didSet {
+      configureHeader();
+    }
+  };
    
   override func viewDidLoad() {
     super.viewDidLoad();
+    
+    configureHeader();
     
     if let appearance = navigationController?.navigationBar.standardAppearance {
       appearance.backgroundColor = UIColor.black.withAlphaComponent(0.3);
@@ -52,6 +59,10 @@ class AnimeDetailsViewController: UIViewController {
       self.animeTitle = animeTitle;
     };
   };
+  
+  @objc private func isFavorite() {
+    isSaved.toggle();
+  };
 };
 
 extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDelegate {
@@ -78,6 +89,17 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
 
 // MARK: Layout
 extension AnimeDetailsViewController {
+  private func configureHeader() {
+    let saveButton = UIImage(systemName: isSaved ? "bookmark.fill" : "bookmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular));
+    navigationItem.rightBarButtonItem = UIBarButtonItem(
+      image: saveButton,
+      style: .plain,
+      target: self,
+      action: #selector(isFavorite)
+    );
+    navigationItem.rightBarButtonItem?.tintColor = .white;
+  };
+  
   private func configureScrollView() {
     view.addSubview(scrollView);
     

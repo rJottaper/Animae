@@ -9,6 +9,7 @@ import UIKit
 
 class SearchAnimeView: UIView {
   let searchAnimeTableView = UITableView();
+  let loading = UIActivityIndicatorView(style: .large);
   
   var animes: [Anime]? {
     didSet {
@@ -22,6 +23,7 @@ class SearchAnimeView: UIView {
     super.init(frame: frame);
     
     configureTableView();
+    configureLoading();
   };
   
   required init?(coder: NSCoder) {
@@ -54,6 +56,20 @@ extension SearchAnimeView: UITableViewDelegate, UITableViewDataSource {
     
     SceneDelegate.shared?.pushViewController(viewController: animeDetailsViewController);
   };
+  
+  func startLoading() {
+    DispatchQueue.main.async {
+      self.loading.startAnimating();
+      self.loading.isHidden = false;
+    }
+  };
+    
+  func stopLoading() {
+    DispatchQueue.main.async {
+      self.loading.stopAnimating();
+      self.loading.isHidden = true;
+    }
+  };
 }
 
 extension SearchAnimeView {
@@ -74,4 +90,18 @@ extension SearchAnimeView {
       searchAnimeTableView.bottomAnchor.constraint(equalTo: bottomAnchor)
     ]);
   };
+  
+  private func configureLoading() {
+    addSubview(loading);
+    
+    loading.translatesAutoresizingMaskIntoConstraints = false;
+    loading.color = .white;
+        
+    NSLayoutConstraint.activate([
+      loading.topAnchor.constraint(equalTo: topAnchor),
+      loading.leadingAnchor.constraint(equalTo: leadingAnchor),
+      loading.trailingAnchor.constraint(equalTo: trailingAnchor),
+      loading.bottomAnchor.constraint(equalTo: bottomAnchor)
+    ]);
+  }
 };
