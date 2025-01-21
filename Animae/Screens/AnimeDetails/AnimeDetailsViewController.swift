@@ -6,17 +6,21 @@
 //
 
 import UIKit
+import CoreData
 
 class AnimeDetailsViewController: UIViewController {
   let scrollView = UIScrollView();
   let animeDetailsView = AnimeDetailsView();
   
-  var animeTitle: String = "";
+  var anime: Anime?;
+  
   var isSaved: Bool = false {
     didSet {
       configureHeader();
     }
   };
+  
+  let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext;
    
   override func viewDidLoad() {
     super.viewDidLoad();
@@ -34,6 +38,12 @@ class AnimeDetailsViewController: UIViewController {
     
     animeDetailsView.delegate = self;
   };
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated);
+    
+    getSavedAnimes();
+  }
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated);
@@ -56,12 +66,74 @@ class AnimeDetailsViewController: UIViewController {
       animeDetailsView.animeBanner.downloaded(from: animeImage);
       animeDetailsView.animeTitle.text = animeTitle;
       animeDetailsView.animeDescription.text = animeDescription;
-      self.animeTitle = animeTitle;
+      self.anime = anime;
     };
   };
   
+  private func getSavedAnimes() {
+    guard let anime = anime else {
+      return
+    };
+    
+    do {
+      let fetchRequest: NSFetchRequest<AnimeModel> = AnimeModel.fetchRequest();
+      fetchRequest.predicate = NSPredicate(format: "id == %d", anime.id);
+      
+      let savedAnimes = try self.context.fetch(fetchRequest);
+      
+      if (!savedAnimes.isEmpty) {
+        isSaved = true;
+      };
+    } catch {
+      print("Failed to get animes saved: \(error.localizedDescription)");
+    };
+  }
+  
   @objc private func isFavorite() {
-    isSaved.toggle();
+    guard let anime = anime else {
+      return
+    };
+    
+    if (isSaved) {
+      let alert = UIAlertController(title: "Ei Nerd", message: "Deseja remover \(anime.title) da sua lista de favoritos?", preferredStyle: .alert);
+      alert.addAction(UIAlertAction(title: "Remover", style: .destructive, handler: { [weak self] action in
+        guard let self = self else { return }
+        
+        do {
+          let fetchRequest: NSFetchRequest<AnimeModel> = AnimeModel.fetchRequest();
+          fetchRequest.predicate = NSPredicate(format: "id == %d", anime.id);
+          
+          let animes = try self.context.fetch(fetchRequest);
+          
+          if let animeToDelete = animes.first {
+            self.context.delete(animeToDelete);
+            
+            do {
+              try self.context.save();
+              print("\(anime.title) foi removido dos favoritos");
+              isSaved = false;
+            } catch {
+              print("Erro ao remover anime: \(error.localizedDescription)");
+            };
+          };
+        } catch {
+          print("Falha ao tentar remover um anime.")
+        }
+      }));
+      alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel));
+      
+      present(alert, animated: true);
+    } else {
+      _ = AnimeModel(from: anime, context: context.self);
+      
+      do {
+        try self.context.save();
+        print("\(anime.title) foi adicionado aos favoritos");
+        isSaved = true;
+      } catch {
+        print("Erro ao salvar anime: \(error.localizedDescription)");
+      };
+    };
   };
 };
 
@@ -73,7 +145,7 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
     };
     
     if scrollView.contentOffset.y > 650 {
-      navigationItem.title = animeTitle;
+      navigationItem.title = anime?.title;
     };
     
     if scrollView.contentOffset.y < 650 {
@@ -83,7 +155,7 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
   
   // WatchButton
   func tapWatchButton() {
-    print("Assistir \(animeTitle)");
+    print("Assistir \(anime?.title ?? "")");
   };
 };
 

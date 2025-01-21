@@ -103,5 +103,29 @@ extension SceneDelegate {
     navigationController?.navigationBar.standardAppearance = appearance;
     navigationController?.navigationBar.scrollEdgeAppearance = appearance;
   };
+  
+  private func configureTabBar() {
+    let appearance = UITabBarAppearance()
+    appearance.configureWithOpaqueBackground();
+    appearance.backgroundColor = .gray;
+    appearance.shadowColor = .red;
+    
+    UITabBar.appearance().standardAppearance = appearance;
+    UITabBar.appearance().scrollEdgeAppearance = appearance;
+    UITabBar.appearance().isTranslucent = false;
+    UITabBar.appearance().tintColor = .white;
+
+    let tabBarViewController = UITabBarController();
+    tabBarViewController.view.backgroundColor = .black;
+  
+    homeViewController.setTabBarImage(imageName: "house.fill", title: "Home");
+    
+    let home = UINavigationController(rootViewController: homeViewController);
+
+    tabBarViewController.setViewControllers([home], animated: true);
+
+    window?.rootViewController = tabBarViewController;
+    window?.makeKeyAndVisible();
+  }
 };
 
