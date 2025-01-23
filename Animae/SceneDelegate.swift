@@ -21,9 +21,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     window = UIWindow(frame: windowScene.coordinateSpace.bounds);
     window?.windowScene = windowScene;
+    configureTabBar();
     window?.makeKeyAndVisible();
     
-    setViewController(viewController: homeViewController);
+    // setViewController(viewController: homeViewController);
   };
 };
 
@@ -107,25 +108,40 @@ extension SceneDelegate {
   private func configureTabBar() {
     let appearance = UITabBarAppearance()
     appearance.configureWithOpaqueBackground();
-    appearance.backgroundColor = .gray;
-    appearance.shadowColor = .red;
+    appearance.backgroundColor = UIColor(cgColor: CGColor(red: 0, green: 0, blue: 0, alpha: 0.8));
     
     UITabBar.appearance().standardAppearance = appearance;
     UITabBar.appearance().scrollEdgeAppearance = appearance;
-    UITabBar.appearance().isTranslucent = false;
+    UITabBar.appearance().isTranslucent = true;
     UITabBar.appearance().tintColor = .white;
 
     let tabBarViewController = UITabBarController();
     tabBarViewController.view.backgroundColor = .black;
   
-    homeViewController.setTabBarImage(imageName: "house.fill", title: "Home");
+    homeViewController.setTabBarImage(imageName: "house", title: "");
     
     let home = UINavigationController(rootViewController: homeViewController);
+    configureNavigationBarAppearance(navigationController: home)
 
     tabBarViewController.setViewControllers([home], animated: true);
+    
+    let rootNavigationController = UINavigationController(rootViewController: tabBarViewController);
+    configureNavigationBarAppearance(navigationController: rootNavigationController);
+    
+    rootNavigationController.delegate = self;
 
-    window?.rootViewController = tabBarViewController;
+    window?.rootViewController = rootNavigationController;
     window?.makeKeyAndVisible();
-  }
+  };
+};
+
+extension SceneDelegate: UINavigationControllerDelegate {
+  func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+    if viewController is UITabBarController {
+      navigationController.setNavigationBarHidden(true, animated: animated);
+    } else {
+      navigationController.setNavigationBarHidden(false, animated: animated);
+    };
+  };
 };
 
