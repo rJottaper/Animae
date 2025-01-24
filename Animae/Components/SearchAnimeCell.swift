@@ -29,7 +29,7 @@ class SearchAnimeCell: UITableViewCell {
   func configure(anime: Anime) {
     animeImage.downloaded(from: anime.imageUrl);
     animeTitle.text = anime.title;
-    animeEpisodes.text = "\(anime.episodes) Episódios"
+    animeEpisodes.text = "\(anime.episodes) \(anime.episodes > 1 ? "Episódios" : "Episódio")"
   };
 };
 

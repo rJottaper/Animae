@@ -63,3 +63,15 @@ struct Anime: Decodable {
     };
   };
 };
+
+extension Anime {
+  init(from animeModel: AnimeModel) {
+    self.id = Int(animeModel.id);
+    self.title = animeModel.title ?? "Sem título";
+    self.episodes = Int(animeModel.episodes);
+    self.synopsis = animeModel.synopsis ?? "Sem descrição";
+    self.url = animeModel.url ?? "";
+    self.imageUrl = animeModel.imageUrl ?? "";
+    self.trailerUrl = animeModel.trailerUrl;
+  };
+};

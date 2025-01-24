@@ -15,6 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
   
   let homeViewController = HomeViewController();
+  let myAnimesViewController = MyAnimesViewController();
 
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -119,11 +120,14 @@ extension SceneDelegate {
     tabBarViewController.view.backgroundColor = .black;
   
     homeViewController.setTabBarImage(imageName: "house", title: "");
+    myAnimesViewController.setTabBarImage(imageName: "bookmark", title: "")
     
     let home = UINavigationController(rootViewController: homeViewController);
-    configureNavigationBarAppearance(navigationController: home)
+    let myAnimes = UINavigationController(rootViewController: myAnimesViewController);
+    configureNavigationBarAppearance(navigationController: home);
+    configureNavigationBarAppearance(navigationController: myAnimes);
 
-    tabBarViewController.setViewControllers([home], animated: true);
+    tabBarViewController.setViewControllers([home, myAnimes], animated: true);
     
     let rootNavigationController = UINavigationController(rootViewController: tabBarViewController);
     configureNavigationBarAppearance(navigationController: rootNavigationController);
