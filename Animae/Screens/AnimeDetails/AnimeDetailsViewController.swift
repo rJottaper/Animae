@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import youtube_ios_player_helper
 
 class AnimeDetailsViewController: UIViewController {
   let scrollView = UIScrollView();
@@ -155,7 +156,14 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
   
   // WatchButton
   func tapWatchButton() {
-    print("Assistir \(anime?.title ?? "")");
+    let watchAnimeViewController = WatchAnimeViewController();
+    guard let trailerId = anime?.trailerUrl else {
+      return watchAnimeViewController.configureVideo(withId: "");
+    };
+    
+    watchAnimeViewController.configureVideo(withId: trailerId);
+    
+    present(watchAnimeViewController, animated: true);
   };
 };
 

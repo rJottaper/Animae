@@ -39,7 +39,7 @@ struct Anime: Decodable {
   };
   
   private enum TrailerKeys: String, CodingKey {
-    case url;
+    case youtube_id;
   };
   
   init(from decoder: any Decoder) throws {
@@ -57,7 +57,7 @@ struct Anime: Decodable {
     
     // Sempre que for Opcional deve ser tratado para funcionar.
     if let trailerContainer = try? container.nestedContainer(keyedBy: TrailerKeys.self, forKey: .trailer) {
-      trailerUrl = try? trailerContainer.decode(String.self, forKey: .url);
+      trailerUrl = try? trailerContainer.decode(String.self, forKey: .youtube_id);
     } else {
       trailerUrl = nil;
     };
