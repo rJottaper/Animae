@@ -20,10 +20,11 @@ class ANButton: UIButton {
     fatalError("init(coder:) has not been implemented")
   };
   
-  init(title: String, iconName: String? = nil) {
+  init(title: String, iconName: String? = nil, background: UIColor? = nil) {
     super.init(frame: .zero);
     
     self.setTitle(title, for: .normal);
+    self.backgroundColor = background ?? .white;
     
     if iconName != nil && iconName != "" {
       self.setImage(UIImage(systemName: iconName!), for: .normal);
@@ -38,7 +39,6 @@ class ANButton: UIButton {
   
   private func configureButton() {
     translatesAutoresizingMaskIntoConstraints = false;
-    backgroundColor = .white;
     setTitleColor(.black, for: .normal);
     titleLabel?.font =  UIFont.systemFont(ofSize: 20);
     layer.cornerRadius = 8;

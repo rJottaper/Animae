@@ -9,6 +9,7 @@ import UIKit
 
 protocol AnimeDetailsViewDelegate: AnyObject {
   func tapWatchButton();
+  func tapRemindButton();
 };
 
 class AnimeDetailsView: UIView {
@@ -16,7 +17,8 @@ class AnimeDetailsView: UIView {
   let shadowView = UIView();
   let animeTitle = UILabel();
   let animeDescription = UILabel();
-  let watchButton = ANButton(title: "Assistir Trailer", iconName: "play.fill")
+  let watchButton = ANButton(title: "Assistir Trailer", iconName: "play")
+  let remindButton = ANButton(title: "Adicionar Lembrete", iconName: "stopwatch", background: .orange);
   
   weak var delegate: AnimeDetailsViewDelegate?
   
@@ -42,6 +44,10 @@ extension AnimeDetailsView {
   @objc func watchButtonTapped() {
     delegate?.tapWatchButton();
   };
+  
+  @objc func remindButtonTapped() {
+    delegate?.tapRemindButton();
+  };
 };
 
 
@@ -52,6 +58,7 @@ extension AnimeDetailsView {
     configureAnimaTitle();
     configureAnimeDescription();
     configureWatchButton();
+    configureRemindButton();
   };
   
   private func configureAnimeBanner() {
@@ -123,8 +130,22 @@ extension AnimeDetailsView {
       watchButton.topAnchor.constraint(equalTo: animeDescription.bottomAnchor, constant: 20),
       watchButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
       watchButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
-      watchButton.bottomAnchor.constraint(equalTo: bottomAnchor),
       watchButton.heightAnchor.constraint(equalToConstant: 60)
+    ]);
+  };
+  
+  private func configureRemindButton() {
+    addSubview(remindButton);
+    
+    remindButton.translatesAutoresizingMaskIntoConstraints = false;
+    remindButton.addTarget(self, action: #selector(remindButtonTapped), for: .touchUpInside);
+    
+    NSLayoutConstraint.activate([
+      remindButton.topAnchor.constraint(equalTo: watchButton.bottomAnchor, constant: 15),
+      remindButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
+      remindButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
+      remindButton.bottomAnchor.constraint(equalTo: bottomAnchor),
+      remindButton.heightAnchor.constraint(equalToConstant: 60)
     ]);
   };
 };

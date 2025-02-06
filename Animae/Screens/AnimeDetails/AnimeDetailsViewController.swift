@@ -8,6 +8,7 @@
 import UIKit
 import CoreData
 import youtube_ios_player_helper
+import UserNotifications
 
 class AnimeDetailsViewController: UIViewController {
   let scrollView = UIScrollView();
@@ -154,7 +155,7 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
     };
   };
   
-  // WatchButton
+  // Buttons
   func tapWatchButton() {
     let watchAnimeViewController = WatchAnimeViewController();
     guard let trailerId = anime?.trailerUrl else {
@@ -164,6 +165,31 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
     watchAnimeViewController.configureVideo(withId: trailerId);
     
     present(watchAnimeViewController, animated: true);
+  };
+  
+  func tapRemindButton() {
+    let notificationCenter = UNUserNotificationCenter.current();
+    
+    notificationCenter.getNotificationSettings { settings in
+      switch settings.authorizationStatus {
+      case .authorized:
+        self.sendNotification();
+      case .denied:
+        return
+      case .notDetermined:
+        notificationCenter.requestAuthorization(options: [.alert, .sound]) { didAllow, error in
+          if didAllow {
+            self.sendNotification();
+          };
+        };
+      default:
+        return
+      };
+    };
+  };
+  
+  func sendNotification() {
+    print("Notificação enviada.");
   };
 };
 
