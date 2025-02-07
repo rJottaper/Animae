@@ -189,7 +189,31 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
   };
   
   func sendNotification() {
-    print("Notificação enviada.");
+    let identifier = UUID().uuidString;
+    let notificationCenter = UNUserNotificationCenter.current();
+    let content = UNMutableNotificationContent();
+    
+    content.title = "Lembrete Adicionado";
+    content.body = "Foi adicionado um lembrete para assistir \(anime?.title ?? "") mais tarde";
+    content.sound = .default;
+    
+    let calendar = Calendar.current;
+    var dateComponents = DateComponents(calendar: calendar, timeZone: TimeZone.current);
+    
+    dateComponents.hour = calendar.component(.hour, from: Date());
+    dateComponents.minute = calendar.component(.minute, from: Date());
+    
+    print("Entrou aqui as \(calendar.component(.hour, from: Date())) e \(calendar.component(.minute, from: Date()))")
+    
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false);
+    let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger);
+    
+    notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier]);
+    notificationCenter.add(request) { error in
+      if let error = error {
+        print("Falha ao enviar notificação: \(error.localizedDescription)");
+      };
+    }
   };
 };
 
