@@ -16,6 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   let homeViewController = HomeViewController();
   let myAnimesViewController = MyAnimesViewController();
+  let myProfileViewControler = MyProfileViewController();
 
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -121,13 +122,17 @@ extension SceneDelegate {
   
     homeViewController.setTabBarImage(imageName: "house", title: "");
     myAnimesViewController.setTabBarImage(imageName: "bookmark", title: "")
+    myProfileViewControler.setTabBarImage(imageName: "person", title: "")
     
     let home = UINavigationController(rootViewController: homeViewController);
     let myAnimes = UINavigationController(rootViewController: myAnimesViewController);
+    let myProfile = UINavigationController(rootViewController: myProfileViewControler);
     configureNavigationBarAppearance(navigationController: home);
     configureNavigationBarAppearance(navigationController: myAnimes);
+    configureNavigationBarAppearance(navigationController: myProfile)
 
-    tabBarViewController.setViewControllers([home, myAnimes], animated: true);
+    tabBarViewController.setViewControllers([myAnimes, home, myProfile], animated: true);
+    tabBarViewController.selectedIndex = 1;
     
     let rootNavigationController = UINavigationController(rootViewController: tabBarViewController);
     configureNavigationBarAppearance(navigationController: rootNavigationController);

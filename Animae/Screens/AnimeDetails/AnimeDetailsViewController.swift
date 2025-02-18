@@ -173,13 +173,19 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
     notificationCenter.getNotificationSettings { settings in
       switch settings.authorizationStatus {
       case .authorized:
-        self.sendNotification();
+        DispatchQueue.main.async {
+          self.sendNotification();
+        };
       case .denied:
-        return
+        DispatchQueue.main.async {
+          self.openConfig();
+        }
       case .notDetermined:
         notificationCenter.requestAuthorization(options: [.alert, .sound]) { didAllow, error in
           if didAllow {
-            self.sendNotification();
+            DispatchQueue.main.async {
+              self.sendNotification();
+            }
           };
         };
       default:
@@ -188,7 +194,7 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
     };
   };
   
-  func sendNotification() {
+  private func sendNotification() {
     let identifier = UUID().uuidString;
     let notificationCenter = UNUserNotificationCenter.current();
     let content = UNMutableNotificationContent();
@@ -203,8 +209,6 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
     dateComponents.hour = calendar.component(.hour, from: Date());
     dateComponents.minute = calendar.component(.minute, from: Date());
     
-    print("Entrou aqui as \(calendar.component(.hour, from: Date())) e \(calendar.component(.minute, from: Date()))")
-    
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false);
     let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger);
     
@@ -214,6 +218,16 @@ extension AnimeDetailsViewController: UIScrollViewDelegate, AnimeDetailsViewDele
         print("Falha ao enviar notificação: \(error.localizedDescription)");
       };
     }
+  };
+  
+  private func openConfig() {
+    guard let settigsUrl = URL(string: UIApplication.openSettingsURLString) else {
+      return
+    };
+    
+    if UIApplication.shared.canOpenURL(settigsUrl) {
+      UIApplication.shared.open(settigsUrl);
+    };
   };
 };
 

@@ -50,7 +50,7 @@
 
   // MARK: Layout
   extension HomeView {
-    private func configureLayout() {
+    func configureLayout() {
       configureHighlightAnime();
       configureHighlightPlayButton();
       configureIsAvailableText();
