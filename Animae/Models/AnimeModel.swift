@@ -74,4 +74,14 @@ extension Anime {
     self.imageUrl = animeModel.imageUrl ?? "";
     self.trailerUrl = animeModel.trailerUrl;
   };
+  
+  init(id: Int, title: String, episodes: Int, synopsis: String, url: String, imageUrl: String, trailerUrl: String? = nil) {
+    self.id = id;
+    self.title = title;
+    self.episodes = episodes;
+    self.synopsis = synopsis;
+    self.url = url;
+    self.imageUrl = imageUrl;
+    self.trailerUrl = trailerUrl;
+  };
 };
