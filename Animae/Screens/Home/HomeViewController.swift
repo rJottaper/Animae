@@ -10,13 +10,16 @@ import UIKit
 class HomeViewController: UIViewController {
   let scrollView = UIScrollView();
   let homeView = HomeView();
+  let homeViewModel = HomeViewModel();
   
   let animeService = AnimeService();
   
   override func viewDidLoad() {
     super.viewDidLoad();
     
-    getAnimes();
+    setupBindings();
+    homeViewModel.fetchAnimes();
+    
     configureHeader();
     configureScrollView();
     configureHomeView();
@@ -28,14 +31,17 @@ class HomeViewController: UIViewController {
     configureScrollView();
   };
   
-  private func getAnimes() {
-    Task {
-      do {
-        let animes = try await animeService.getTopAnime();
-        homeView.configureAnimes(with: animes);
-      } catch AnimeServiceError.invalidResponse {
-        print("Failed to get animes");
+  private func setupBindings() {
+    homeViewModel.onAnimesUpdated = { [weak self] in
+      guard let self = self, let animes = self.homeViewModel.animes else { return };
+      
+      DispatchQueue.main.async {
+        self.homeView.configureAnimes(with: animes);
       };
+    };
+    
+    homeViewModel.onError = { errorMessage in
+      print("Erro ao buscar os animes: \(errorMessage)");
     };
   };
 };
