@@ -51,7 +51,7 @@ extension SearchAnimeView: UITableViewDelegate, UITableViewDataSource {
   };
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let animeDetailsViewController = AnimeDetailsViewController();
+    let animeDetailsViewController = AnimeDetailsViewController(anime: animes?[indexPath.row]);
     animeDetailsViewController.configure(with: animes?[indexPath.row]);
     
     SceneDelegate.shared?.pushViewController(viewController: animeDetailsViewController);

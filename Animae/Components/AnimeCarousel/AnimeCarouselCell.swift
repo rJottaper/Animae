@@ -56,7 +56,7 @@ extension AnimeCarouselCell: UICollectionViewDelegate, UICollectionViewDataSourc
     };
   
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    let animeDetailsViewController = AnimeDetailsViewController();
+    let animeDetailsViewController = AnimeDetailsViewController(anime: animes?.data[indexPath.row]);
     animeDetailsViewController.configure(with: animes?.data[indexPath.row]);
     
     SceneDelegate.shared?.pushViewController(viewController: animeDetailsViewController);

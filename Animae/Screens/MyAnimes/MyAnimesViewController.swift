@@ -38,7 +38,7 @@ class MyAnimesViewController: UIViewController {
 
 extension MyAnimesViewController: MyAnimesViewDelegate {
   func getAnimeDetails(anime: Anime) {
-    let animeDetailsViewController = AnimeDetailsViewController();
+    let animeDetailsViewController = AnimeDetailsViewController(anime: anime);
     animeDetailsViewController.configure(with: anime);
     
     SceneDelegate.shared?.pushViewController(viewController: animeDetailsViewController);
