@@ -10,12 +10,11 @@ import UIKit
 class SearchAnimeViewController: UIViewController {
   let searchAnime = UISearchController();
   let searchAnimeView = SearchAnimeView();
+  let searchAnimeViewModel = SearchAnimeViewModel();
   
   var animes: AnimesResponse?
   var filteredAnimes: [Anime]?
   var debounceWorkItem: DispatchWorkItem?
-  
-  let animeService = AnimeService();
   
   override func viewDidLoad() {
     super.viewDidLoad();
@@ -23,19 +22,22 @@ class SearchAnimeViewController: UIViewController {
     navigationItem.leftBarButtonItem = nil;
     navigationItem.setHidesBackButton(true, animated: true);
     
-    getAnimes();
+    setupBindings()
+    searchAnimeViewModel.getAnimes();
+    
     configureAnimeSearch();
     configureSearchAnimeView();
   };
   
-  private func getAnimes() {
-    Task {
-      do {
-        let animes = try await animeService.getSearchAnimes();
-        self.animes = animes;
-      } catch AnimeServiceError.invalidResponse {
-        print("Failed to get search animes");
-      };
+  private func setupBindings() {
+    searchAnimeViewModel.onUpdate = { [weak self] in
+      guard let animes = self?.searchAnimeViewModel.animes else { return }
+      
+      self?.animes = animes;
+    };
+    
+    searchAnimeViewModel.onError = { errorMessage in
+      print("Erro ao buscar os animes: \(errorMessage)");
     };
   };
 };
@@ -57,7 +59,7 @@ extension SearchAnimeViewController: UISearchResultsUpdating, UISearchBarDelegat
       guard let self else { return }
       
       if searchText.isEmpty {
-        filteredAnimes?.removeAll();
+        filteredAnimes = [];
       } else {
         filteredAnimes = animes?.data.filter({
           anime in anime.title.lowercased().contains(searchText.lowercased());

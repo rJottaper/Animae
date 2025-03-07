@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import CoreData
 
 class MyAnimesViewController: UIViewController {
   let myAnimesView = MyAnimesView();
