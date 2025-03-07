@@ -10,14 +10,21 @@ import CoreData
 
 class MyAnimesViewController: UIViewController {
   let myAnimesView = MyAnimesView();
-  
-  let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext;
+  let myAnimesViewModel = MyAnimesViewModel();
   
   override func viewDidLoad() {
     super.viewDidLoad();
     
     configureHeader();
     configureMyAnimesView();
+    
+    myAnimesViewModel.onUpdate = { [weak self] in
+      self?.getSavedAnimes();
+    };
+    
+    myAnimesViewModel.onError = { errorMessage in
+      print("Erro ao buscar os animes: \(errorMessage)");
+    };
   };
   
   override func viewWillAppear(_ animated: Bool) {
@@ -27,12 +34,8 @@ class MyAnimesViewController: UIViewController {
   };
   
   private func getSavedAnimes() {
-    do {
-      let savedAnimes = try self.context.fetch(AnimeModel.fetchRequest());
-      myAnimesView.animes = savedAnimes;
-    } catch {
-      print("Failed to get saved animes: \(error.localizedDescription)");
-    }
+    let savedAnimes = myAnimesViewModel.getAnimes();
+    myAnimesView.animes = savedAnimes;
   };
 };
 
@@ -44,33 +47,14 @@ extension MyAnimesViewController: MyAnimesViewDelegate {
     SceneDelegate.shared?.pushViewController(viewController: animeDetailsViewController);
   };
   
-  func removeSavedAnime(anime: AnimeModel) {
+  func removeSavedAnime(anime: Anime) {
     let animeTitle = anime.title ?? ""
     
     let alert = UIAlertController(title: "Ei Nerd", message: "Tem certeza que deseja remover \(animeTitle) da sua lista?", preferredStyle: .alert);
     alert.addAction(UIAlertAction(title: "Remover", style: .destructive, handler: { [weak self] action in
       guard let self = self else { return }
       
-      do {
-        let fetchRequest: NSFetchRequest<AnimeModel> = AnimeModel.fetchRequest();
-        fetchRequest.predicate = NSPredicate(format: "id == %d", anime.id);
-        
-        let animes = try self.context.fetch(fetchRequest);
-        
-        if let animeToRemove = animes.first {
-          self.context.delete(animeToRemove);
-          
-          do {
-            try self.context.save();
-            print("\(animeTitle) foi removido da lista.")
-            self.getSavedAnimes();
-          } catch {
-            print("Falha ao tentar salvar o core data atualizado. \(error.localizedDescription)");
-          }
-        };
-      } catch {
-        print("Falha ao tentar remover um anime. \(error.localizedDescription)");
-      };
+      myAnimesViewModel.removeAnime(anime);
     }));
     alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel));
     

@@ -9,7 +9,7 @@ import UIKit
 
 protocol MyAnimesViewDelegate: AnyObject {
   func getAnimeDetails(anime: Anime);
-  func removeSavedAnime(anime: AnimeModel);
+  func removeSavedAnime(anime: Anime);
 };
 
 class MyAnimesView: UIView {
@@ -68,7 +68,8 @@ extension MyAnimesView: UITableViewDelegate, UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
     let delectionAction = UIContextualAction(style: .destructive, title: nil) { (_, _, completionHandler) in
-      if let anime = self.animes?[indexPath.row] {
+      if let animeModel = self.animes?[indexPath.row] {
+        let anime = Anime(from: animeModel);
         self.delegate?.removeSavedAnime(anime: anime);
       };
     };

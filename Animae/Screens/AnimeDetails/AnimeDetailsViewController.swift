@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import CoreData
 import youtube_ios_player_helper
 import UserNotifications
 
@@ -25,8 +24,6 @@ class AnimeDetailsViewController: UIViewController {
       self?.configureHeader();
     };
   };
-  
-  let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext;
    
   override func viewDidLoad() {
     super.viewDidLoad();

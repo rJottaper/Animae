@@ -11,6 +11,16 @@ import CoreData
 class AnimeRepository {
   private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext;
   
+  func getAnimesSaved() -> [AnimeModel] {
+    do {
+      let savedAnimes = try self.context.fetch(AnimeModel.fetchRequest());
+      return savedAnimes
+    } catch {
+      print("Failed to get saved animes: \(error.localizedDescription)");
+      return [];
+    };
+  };
+  
   func isAnimeSaved(_ anime: Anime) -> Bool {
     do {
       let fetchRequest: NSFetchRequest<AnimeModel> = AnimeModel.fetchRequest();
